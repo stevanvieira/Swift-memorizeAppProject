@@ -13,7 +13,7 @@ struct ContentView: View {
             Image(systemName: "globe")//Image struct that behaves like a view
                 .imageScale(.large) //imageScale Function, that is being called on the Image struct
                 .foregroundColor(.blue) //foregroundColor Function, that is being called on the Image struct
-            Text("Hello, Stevan!")//Text struct that behaves like a view
+            Text("Hello, Stevan Vieira!")//Text struct that behaves like a view
             HStack { //Horizantal Stack Function
                 Text("Left")
                 Text("Right")
