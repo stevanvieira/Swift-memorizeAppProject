@@ -8,12 +8,23 @@
 import SwiftUI
 
 struct ContentView: View {
+    let emojis = ["👻","🎃","🕷","😈", "💀", "🕸", "🧙‍♀️", "🙀", "👹", "😱", "☠️", "🍭"] //Array of emojis
+    @State var cardCount: Int = 4
     var body: some View {
-        HStack {
-            CardView(isFaceUp: true)
-            CardView(isFaceUp: false)
-            CardView(isFaceUp: true)
-            CardView(isFaceUp: false)
+        VStack {
+            HStack {
+                ForEach(0..<cardCount, id: \.self) { index in
+                    CardView(content: emojis[index])
+                }
+            }
+            HStack {
+                Button("Remove") {
+                    cardCount -= 1
+                }
+                Button("Add") {
+                    cardCount += 1
+                }
+            }
         }
         .padding() //padding Function called on ZStack
         .foregroundColor(.orange) //Function called on ZStack
@@ -21,21 +32,24 @@ struct ContentView: View {
 }
 
 struct CardView: View {
-    var isFaceUp: Bool = false //false is a default value
+    let content: String //New argument for CardView
+    @State var isFaceUp: Bool = true
     var body: some View {
-        if isFaceUp == true {
-            ZStack(content: {
+        ZStack(content: {
+            if isFaceUp {
                 RoundedRectangle(cornerRadius: 12)
                     .foregroundColor(.white)
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(lineWidth: 2)
-                Text("👻").font(.largeTitle)
-            })
+                Text(content).font(.largeTitle)
+            }
+            else {
+                RoundedRectangle(cornerRadius: 12)
+            }
+        }).onTapGesture {
+            isFaceUp.toggle() //The variable isFaceUp can't be changed
+            //unless you put a pointer @State on it.
         }
-        else {
-            RoundedRectangle(cornerRadius: 12)
-        }
-        
     }
 }
 
