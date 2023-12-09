@@ -12,22 +12,50 @@ struct ContentView: View {
     @State var cardCount: Int = 4
     var body: some View {
         VStack {
-            HStack {
-                ForEach(0..<cardCount, id: \.self) { index in
-                    CardView(content: emojis[index])
-                }
+            ScrollView {
+                cards
             }
-            HStack {
-                Button("Remove") {
-                    cardCount -= 1
-                }
-                Button("Add") {
-                    cardCount += 1
-                }
+            Spacer()
+            cardCountAdjusters
+        }
+        .padding()
+    }
+    
+    var cards: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))]) {
+            ForEach(0..<cardCount, id: \.self) { index in
+                CardView(content: emojis[index])
+                    .aspectRatio(2/3, contentMode: .fit)
             }
         }
-        .padding() //padding Function called on ZStack
-        .foregroundColor(.orange) //Function called on ZStack
+        .foregroundColor(.orange)
+    }
+    
+    var cardCountAdjusters: some View {
+        HStack {
+            cardRemover
+            Spacer()
+            cardAdder
+        }
+        .imageScale(.large)
+        .font(.largeTitle)
+    }
+    
+    func cardCountAdjuster(by offset: Int, symbol: String) -> some View {
+        Button(action: {
+            cardCount += offset
+        }, label: {
+            Image(systemName: symbol)
+        })
+        .disabled(cardCount + offset < 1 || cardCount + offset > emojis.count)
+    }
+    
+    var cardRemover: some View {
+        cardCountAdjuster(by: -1, symbol: "rectangle.stack.badge.minus.fill")
+    }
+    
+    var cardAdder: some View {
+        cardCountAdjuster(by: +1, symbol: "rectangle.stack.badge.plus.fill")
     }
 }
 
@@ -36,16 +64,15 @@ struct CardView: View {
     @State var isFaceUp: Bool = true
     var body: some View {
         ZStack(content: {
-            if isFaceUp {
-                RoundedRectangle(cornerRadius: 12)
-                    .foregroundColor(.white)
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(lineWidth: 2)
+            let base = RoundedRectangle(cornerRadius: 12)
+            Group { //if we dont Group, we needed to use .opacity 3xtimes
+                base.fill(.white)
+                base.strokeBorder(lineWidth: 2)
                 Text(content).font(.largeTitle)
             }
-            else {
-                RoundedRectangle(cornerRadius: 12)
-            }
+            .opacity(isFaceUp ? 1 : 0)
+            base.fill().opacity(isFaceUp ? 0 : 1)
+            
         }).onTapGesture {
             isFaceUp.toggle() //The variable isFaceUp can't be changed
             //unless you put a pointer @State on it.
@@ -58,22 +85,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-//Commented Code:
-
-//###############################################
-//###############################################
-//        VStack { //Vertical Stack Function that returns a Tuple of views. This function accpets arguments. VStack()
-//            Image(systemName: "globe")//Image struct that behaves like a view
-//                .imageScale(.large) //imageScale Function, that is being called on the Image struct
-//                .foregroundColor(.blue) //foregroundColor Function, that is being called on the Image struct
-//            Text("Hello, Stevan Vieira!")//Text struct that behaves like a view
-//            HStack { //Horizantal Stack Function
-//                Text("Left")
-//                Text("Right")
-//            }
-//        }
-
-//###############################################
-//###############################################
 
